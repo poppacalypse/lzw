@@ -18,7 +18,7 @@ loadSprite("wall_mid", "/sprites/wall_mid.png");
 loadSprite("wall_right", "/sprites/wall_right.png");
 loadSprite("wall_fountain", "/sprites/wall_fountain.png", {
   sliceX: 3,
-  anims: { // (anims in plural)
+  anims: { // (Anims in plural)
     idle: { from: 0, to: 2, speed: 5, loop: true } 
     // 'idle' is own name. get frames 0-2, at speed of 5 frames per second
   }
@@ -97,11 +97,11 @@ scene("play", ({ level }) => {
   const mapConfig = {
     width: 16,
     height: 16,
-    // solid means you can't move through it. "wall" at end is a tag, can be named anything
+    // Solid means you can't move through it. "wall" at end is a tag, can be named anything
     l: () => [sprite ("wall_left"), area(), solid(), "wall"], 
     r: () => [sprite ("wall_right"), area(), solid(), "wall"],
     w: () => [sprite ("wall_mid"), area(), solid(), "wall"],
-    // fountain is an animation, so must specify type - idle or run (anim in singular)
+    // Fountain is an animation, so must specify type - idle or run (anim in singular)
     f: () => [
       sprite ("wall_fountain", { anim: "idle" }), 
       area(), 
@@ -292,27 +292,51 @@ scene("play", ({ level }) => {
     sprite("wizard"),
     pos(map.getPos(9,9)),
     origin("center"),
+    // w/o area defn, object cannot detect boundary for collision
+    area(), 
     "danger",
     state("move", ["idle", "attack", "move"]) // state fn from Kaboom library
   ]);
 
     // when Wizard is in idle state, do something
-    // or in tech jargon:
+    // Or in tech jargon:
     // run the callback every time Wizard ENTERs "idle" state
     wizard.onStateEnter("idle", async () => {
       wizard.play("idle");
-      // Idle for 0.5secs, then enter Move state
+      // IDLE for 0.5secs, then enter ATTACK state
       await wait(0.5);
-      wizard.enterState("move");
+      wizard.enterState("attack");
     });
 
     // run the callback every time Wizard ENTERs "attack" state
-    wizard.onStateEnter("attack", async () => {});
+    wizard.onStateEnter("attack", async () => {
+      if (player.exists()){
+        // calculate vector of player from wizard
+        const dir = player.pos.sub(wizard.pos).unit(); 
+
+        // generate fire
+        add([
+          pos(wizard.pos),
+          move(dir, FIRE_SPEED),
+          rect(2,2), // rectangle
+          area(),
+          origin("center"),
+          color(RED),
+          // destroy object when it's out of screen view
+          cleanup(),
+          "fire",
+          "danger"
+        ]);
+      }
+
+      await wait(1)
+      wizard.enterState("move");
+    });
 
     // run the callback every time Wizard ENTERs "move" state
     wizard.onStateEnter("move", async () => {
       wizard.play("run");
-      // Move for 0.5secs, then enter Attack state
+      // MOVE for 0.5secs, then enter ATTACK state
       await wait(2);
       wizard.enterState("idle");
     });
@@ -343,7 +367,7 @@ scene("over", ({ score }) => {
 });
 
 
-go("play", { level: 1 });
+go("play", { level: 0 });
 
 
 // debug.inspect = true;
