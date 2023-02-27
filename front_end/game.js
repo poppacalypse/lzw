@@ -12,6 +12,9 @@ const OGRE_SPEED = 30;
 const WIZARD_SPEED = 20;
 const FIRE_SPEED = 100;
 
+const BASE_X = width()/2;
+const BASE_Y = 50;
+
 loadSprite("floor", "/sprites/floor.png", { sliceX: 8 });
 loadSprite("wall_left", "/sprites/wall_left.png");
 loadSprite("wall_mid", "/sprites/wall_mid.png");
@@ -362,10 +365,58 @@ scene("over", ({ score }) => {
   add([ text(score, 26), origin("center"), pos(width()/2, height()/2) ]);
 
   onMousePress(() => {
-    go("play", { level: 0 });
+    go("intro");
   });
 });
 
+/*
+* -------------------
+* SCENE - INTRO 
+* -------------------
+*/
+scene("intro", () => {
+  // Step 1 - fetch top 5 games from APIs
+  const games = [
+    {
+      score: 42,
+      player: {
+        id: 2,
+        username: "ADAM"
+      }
+    },
+    {
+      score: 7,
+      player: {
+        id: 1,
+        username: "Carl Poppa"
+      }
+    }
+  ]
+
+  // Step 2 - render leaderboard 
+  add([
+    pos(BASE_X, BASE_Y - 30),
+    sprite("knight", { anim: "idle" }),
+    origin("center")
+  ]);
+
+  games.forEach((game, index) => {
+    add([
+      text(`${game.player.username.toUpperCase()}\u00A0${game.score}`, {
+        size: 10,
+        width: 180,
+        // Kaboom cw 4 built-in fonts: apl386, apl3860, sink, sinko
+        // font: "sink"
+      }),
+      pos(BASE_X, BASE_Y + 20 * index),
+      origin("center")
+    ]);
+  });
+
+  onMousePress(() => {
+    go("play", { level: 0 });
+  });
+});
 
 go("play", { level: 0 });
 
