@@ -25,25 +25,32 @@ loadSprite("knight", "/sprites/knight.png", {
   sliceX: 8,
   anims: {
     idle: { from: 0, to: 3, speed: 5, loop: true },
-    run: { from: 4, to: 7, speed: 10, loop: true },
+    run: { from: 4, to: 7, speed: 10, loop: true }
   },
 });
 loadSprite("ogre", "/sprites/ogre.png", {
   sliceX: 4,
   anims: {
-    run: { from: 0, to: 3, speed: 7, loop: true },
+    run: { from: 0, to: 3, speed: 7, loop: true }
   },
 });
 loadSprite("spikes", "/sprites/spikes.png", {
   sliceX: 4,
   anims: {
-    idle: { from: 0, to: 3, speed: 3, loop: true },
+    idle: { from: 0, to: 3, speed: 3, loop: true }
   },
 });
 loadSprite("hole", "/sprites/hole.png", {
   sliceX: 2,
   anims: {
-    open: { from: 0, to: 1, speed: 3, loop: false },
+    open: { from: 0, to: 1, speed: 3, loop: false }
+  },
+});
+loadSprite("chest", "/sprites/chest.png", {
+  sliceX: 3,
+  anims: {
+    open: { from: 0, to: 2, speed: 20, loop: false },
+    close: { from: 2, to: 0, speed: 20, loop: false }
   },
 });
 
@@ -116,11 +123,11 @@ scene("play", ({ level }) => {
       "lwwwffwwwr",
       "l        r",
       "l     &  r",
-      "l    ^   r",
+      "l     ^  r",
       "l        r",
-      "l &    & r",
+      "l &      r",
       "l        r",
-      "l        r",
+      "l^       r",
       "l h  &   r",
       "lwwwwwwwwr",
     ],
@@ -141,7 +148,7 @@ scene("play", ({ level }) => {
   // add Map level 
   map = addLevel(matrix[level], mapConfig);
 
-  // add Player 
+  // ----- PLAYER ----- 
   const player = add([
     // position. map grid starts at 1, so (2,2) is first unblocked square
     pos(map.getPos(2,2)),
@@ -205,6 +212,7 @@ scene("play", ({ level }) => {
     });
   });
 
+  // ----- OGRES -----
   // Event that runs at every frame @ 60 FPS
   // Applies to all game objects with specified tag(s) 
   onUpdate("ogre", (o) => {
@@ -218,6 +226,27 @@ scene("play", ({ level }) => {
       o.dir = -o.dir // negative direction i.e. changes direction
       o.timer =rand(5); // randomise timer from 0 up to 5 secs
     }
+  });
+
+  // ==================== MAP LEVEL 01 ===================
+  if (level == 0) return;
+
+  // ----- CHESTS ----- 
+  // add a new chest in a random position every 2 seconds
+  // then fade it out within 4 seconds 
+  loop(2, () => {
+    const x = rand(1,8) // because 0 and 9 are walls
+    const y = rand(1,8)
+
+    add([
+      sprite("chest"),
+      pos(map.getPos(x,y)),
+      area(),
+      solid(),
+      // auto-destroy after 4secs, start fading away after 0.5sec
+      lifespan(4, { fade: 0.5 }),
+      "chest"
+    ])
   });
 });
 
@@ -236,7 +265,7 @@ scene("over", ({ score }) => {
 });
 
 
-go("play", { level: 0 });
+go("play", { level: 1 });
 
 
 // debug.inspect = true;
