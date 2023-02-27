@@ -1,14 +1,16 @@
 // initialise context
 kaboom({
   scale: 3,
-  width: 240,
-  height: 160,
+  width: 282,
+  height: 192,
   background: [0,0,0],
   canvas: document.getElementById("screen"),
 });
 
 const PLAYER_SPEED = 80;
 const OGRE_SPEED = 30;
+const WIZARD_SPEED = 20;
+const FIRE_SPEED = 100;
 
 loadSprite("floor", "/sprites/floor.png", { sliceX: 8 });
 loadSprite("wall_left", "/sprites/wall_left.png");
@@ -53,6 +55,13 @@ loadSprite("chest", "/sprites/chest.png", {
     close: { from: 2, to: 0, speed: 20, loop: false }
   },
 });
+loadSprite("wizard", "/sprites/wizard.png", {
+  sliceX: 8,
+  anims: {
+    idle: { from: 0, to: 2, speed: 5, loop: true },
+    run: { from: 4, to: 7, speed: 10, loop: true }
+  },
+});
 
 /*
 * -------------------
@@ -64,16 +73,18 @@ scene("play", ({ level }) => {
   // add background 10x10
   addLevel(
     [
-      "          ",
-      "          ",
-      "          ",
-      "          ",
-      "          ",
-      "          ",
-      "          ",
-      "          ",
-      "          ",
-      "          ",
+      "            ",
+      "            ",
+      "            ",
+      "            ",
+      "            ",
+      "            ",
+      "            ",
+      "            ",
+      "            ",
+      "            ",
+      "            ",
+      "            ",
     ],
     {
       width: 16,
@@ -114,39 +125,54 @@ scene("play", ({ level }) => {
       "spikes",
       "danger"
     ],
-    h: () => [sprite ("hole"), area(), { open: "false" }, "hole"],
+    h: () => [sprite ("hole"), area(), { opened: false }, "hole"],
   };
 
   // List of maps
   const matrix = [
     [
-      "lwwwffwwwr",
-      "l        r",
-      "l     &  r",
-      "l     ^  r",
-      "l        r",
-      "l &      r",
-      "l        r",
-      "l^       r",
-      "l h  &   r",
-      "lwwwwwwwwr",
+      "lwwwwffwwwwr",
+      "l          r",
+      "l     &    r",
+      "l     ^    r",
+      "l          r",
+      "l          r",
+      "l &        r",
+      "l          r",
+      "l^         r",
+      "l          r",
+      "l h  &     r",
+      "lwwwwwwwwwwr",
     ],
     [
-      "lffffffffr",
-      "l        r",
-      "l        r",
-      "l        r",
-      "l        r",
-      "l        r",
-      "l        r",
-      "l        r",
-      "l        r",
-      "lwwwwwwwwr",
+      "lffffffffffr",
+      "l          r",
+      "l          r",
+      "ll        rr",
+      "l          r",
+      "l          r",
+      "ll        rr",
+      "ll        rr",
+      "l          r",
+      "l          r",
+      "ll        rr",
+      "lwwwwwwwwwwr",
     ],
   ];
 
   // add Map level 
   map = addLevel(matrix[level], mapConfig);
+
+  // ----- SCORE LABEL -----
+  add([pos(238,20), sprite("chest", { frame: 2 }), origin("center")])
+  const scoreLabel = add([
+    text("0"),
+    pos(238,45),
+    { value: 0 },
+    scale(0.3),
+    origin("center")
+  ]);
+  add([text("Carl Poppa"), pos(238,70), origin("center"), scale(0.1)])
 
   // ----- PLAYER ----- 
   const player = add([
@@ -156,7 +182,7 @@ scene("play", ({ level }) => {
     solid(), // makes other objects impenetrable
     // area(), // generates collider area from shape & enables collision detection
     origin("center"), // by default top-left
-    area({ width: 16, height: 16, offset: vec2(0,8) }),
+    area({ width: 16, height: 16, offset: vec2(0,7) }),
   ]);
 
   player.onCollide("danger", async (d) => {
@@ -167,7 +193,7 @@ scene("play", ({ level }) => {
     destroy(d); // ...and danger
 
     await wait(1);
-    go("over", { score: 0 });
+    go("over", { score: scoreLabel.value });
   });
 
   onKeyDown("left", () => {
@@ -210,6 +236,17 @@ scene("play", ({ level }) => {
         }
       }
     });
+    every("chest", async (c) => {
+      if (player.isTouching(c)) {
+        if (!c.opened) {
+          c.play("open");
+          c.opened = true;
+
+          scoreLabel.value++;
+          scoreLabel.text = scoreLabel.value;
+        }
+      }
+    });
   });
 
   // ----- OGRES -----
@@ -230,7 +267,7 @@ scene("play", ({ level }) => {
 
   // ==================== MAP LEVEL 01 ===================
   if (level == 0) return;
-
+  
   // ----- CHESTS ----- 
   // add a new chest in a random position every 2 seconds
   // then fade it out within 4 seconds 
@@ -243,11 +280,33 @@ scene("play", ({ level }) => {
       pos(map.getPos(x,y)),
       area(),
       solid(),
+      { opened: false },
       // auto-destroy after 4secs, start fading away after 0.5sec
       lifespan(4, { fade: 0.5 }),
       "chest"
     ])
   });
+
+  // ----- WIZARD -----
+  const wizard = add([
+    sprite("wizard"),
+    pos(map.getPos(9,9)),
+    origin("center"),
+    "danger",
+    state("move", ["idle", "attack", "move"]) // state fn from Kaboom library
+
+    // when Wizard is in idle state, do something
+    // or in tech jargon:
+    // run the callback every time Wizard ENTERs "idle" state
+    wizard.onStateEnter("idle", async () => {});
+
+    // run the callback every time Wizard ENTERs "attack" state
+    wizard.onStateEnter("attack", async () => {});
+
+    // run the callback every time Wizard ENTERs "move" state
+    wizard.onStateEnter("move", async () => {});
+
+  ]);
 });
 
 /*
