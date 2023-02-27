@@ -8,6 +8,7 @@ kaboom({
 });
 
 const PLAYER_SPEED = 80;
+const OGRE_SPEED = 30;
 
 loadSprite("floor", "/sprites/floor.png", { sliceX: 8 });
 loadSprite("wall_left", "/sprites/wall_left.png");
@@ -95,6 +96,7 @@ scene("play", ({ level }) => {
       area(), 
       solid(), 
       origin("center"),
+      { dir: choose([-1,1]), timer: 0 },
       "ogre",
       "danger"
     ],
@@ -201,6 +203,21 @@ scene("play", ({ level }) => {
         }
       }
     });
+  });
+
+  // Event that runs at every frame @ 60 FPS
+  // Applies to all game objects with specified tag(s) 
+  onUpdate("ogre", (o) => {
+    // when the ogre moves in ogre direction at ogre speed 
+    o.move(o.dir * OGRE_SPEED, 0);
+    o.timer -= dt(); // countdown fn from Kaboom: get delta time since last frame (timer reset)
+    
+    // at this point, ogres move sideways once and stop
+    // to ensure continuous movement, change dir & randomise timer
+    if (o.timer <= 0) {
+      o.dir = -o.dir // negative direction i.e. changes direction
+      o.timer =rand(5); // randomise timer from 0 up to 5 secs
+    }
   });
 });
 
