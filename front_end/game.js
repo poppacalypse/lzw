@@ -27,6 +27,24 @@ loadSprite("knight", "/sprites/knight.png", {
     run: { from: 4, to: 7, speed: 10, loop: true },
   },
 });
+loadSprite("ogre", "/sprites/ogre.png", {
+  sliceX: 4,
+  anims: {
+    run: { from: 0, to: 3, speed: 7, loop: true },
+  },
+});
+loadSprite("spikes", "/sprites/spikes.png", {
+  sliceX: 4,
+  anims: {
+    idle: { from: 0, to: 3, speed: 3, loop: true },
+  },
+});
+loadSprite("hole", "/sprites/hole.png", {
+  sliceX: 2,
+  anims: {
+    open: { from: 0, to: 1, speed: 5, loop: false },
+  },
+});
 
 scene("play", ({level}) => {
   // add background 10x10
@@ -63,8 +81,26 @@ scene("play", ({level}) => {
       sprite ("wall_fountain", { anim: "idle" }), 
       area(), 
       solid(), 
-      "wall",
+      "wall"
     ],
+    "&": () => [
+      sprite ("ogre", { anim: "run" }), 
+      scale(0.70),
+      area(), 
+      solid(), 
+      origin("center"),
+      "ogre",
+      "danger"
+    ],
+    "^": () => [
+      sprite ("spikes", { anim: "idle" }), 
+      area(), 
+      // solid(), 
+      "spikes",
+      "danger"
+    ],
+    h: () => [
+      sprite ("hole"), area(), { opened: "false" }, "hole"],
   };
 
   // List of maps
@@ -72,13 +108,13 @@ scene("play", ({level}) => {
     [
       "lwwwffwwwr",
       "l        r",
+      "l     &  r",
+      "l    ^   r",
       "l        r",
+      "l &    & r",
       "l        r",
-      "l        r",
-      "l        r",
-      "l        r",
-      "l        r",
-      "l        r",
+      "l^       r",
+      "l h  &   r",
       "lwwwwwwwwr",
     ],
     [
