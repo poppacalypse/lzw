@@ -104,8 +104,9 @@ scene("play", ({level}) => {
     pos(map.getPos(2,2)),
     sprite("knight", { anim: "idle" }),
     solid(), // makes other objects impenetrable
-    area(), // generates collider area from shape & enables collision detection
+    // area(), // generates collider area from shape & enables collision detection
     origin("center"), // by default top-left
+    area({ width: 16, height: 16, offset: vec2(0,8) }),
   ]);
 
   onKeyDown("left", () => {
@@ -126,7 +127,20 @@ scene("play", ({level}) => {
   onKeyPress(["left", "right", "up", "down"], () => {
     player.play("run");
   });
+
+  onKeyRelease(["left", "right", "up", "down"], () => {
+    if(
+      !isKeyDown("left") &&
+      !isKeyDown("right") &&
+      !isKeyDown("up") &&
+      !isKeyDown("down")
+    ) {
+      player.play("idle");
+    }
+  });
 });
 
 
 go("play", { level: 0 });
+
+// debug.inspect = true;
