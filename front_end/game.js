@@ -58,7 +58,7 @@ loadSprite("chest", "/sprites/chest.png", {
 loadSprite("wizard", "/sprites/wizard.png", {
   sliceX: 8,
   anims: {
-    idle: { from: 0, to: 2, speed: 5, loop: true },
+    idle: { from: 0, to: 4, speed: 5, loop: true },
     run: { from: 4, to: 7, speed: 10, loop: true }
   },
 });
@@ -294,19 +294,38 @@ scene("play", ({ level }) => {
     origin("center"),
     "danger",
     state("move", ["idle", "attack", "move"]) // state fn from Kaboom library
+  ]);
 
     // when Wizard is in idle state, do something
     // or in tech jargon:
     // run the callback every time Wizard ENTERs "idle" state
-    wizard.onStateEnter("idle", async () => {});
+    wizard.onStateEnter("idle", async () => {
+      wizard.play("idle");
+      // Idle for 0.5secs, then enter Move state
+      await wait(0.5);
+      wizard.enterState("move");
+    });
 
     // run the callback every time Wizard ENTERs "attack" state
     wizard.onStateEnter("attack", async () => {});
 
     // run the callback every time Wizard ENTERs "move" state
-    wizard.onStateEnter("move", async () => {});
+    wizard.onStateEnter("move", async () => {
+      wizard.play("run");
+      // Move for 0.5secs, then enter Attack state
+      await wait(2);
+      wizard.enterState("idle");
+    });
 
-  ]);
+    wizard.onStateUpdate("move", () => {
+      if (!player.exists()) return;
+
+      const dir = player.pos.sub(wizard.pos).unit();
+      wizard.flipX(dir.x < 0);
+      wizard.move(dir.scale(WIZARD_SPEED));
+    });
+
+    wizard.enterState("move");
 });
 
 /*
