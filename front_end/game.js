@@ -7,6 +7,8 @@ kaboom({
   canvas: document.getElementById("screen"),
 });
 
+const PLAYER_SPEED = 80;
+
 loadSprite("floor", "/sprites/floor.png", { sliceX: 8 });
 loadSprite("wall_left", "/sprites/wall_left.png");
 loadSprite("wall_mid", "/sprites/wall_mid.png");
@@ -14,10 +16,17 @@ loadSprite("wall_right", "/sprites/wall_right.png");
 loadSprite("wall_fountain", "/sprites/wall_fountain.png", {
   sliceX: 3,
   anims: { // (anims in plural)
-    idle: { from: 0, to: 2, speed: 5, loop: true } // get frames 0-2, at speed of 5 frames per second
+    idle: { from: 0, to: 2, speed: 5, loop: true } 
+    // 'idle' is own name. get frames 0-2, at speed of 5 frames per second
   }
 });
-
+loadSprite("knight", "/sprites/knight.png", {
+  sliceX: 8,
+  anims: {
+    idle: { from: 0, to: 3, speed: 5, loop: true },
+    run: { from: 4, to: 7, speed: 10, loop: true },
+  },
+});
 
 scene("play", ({level}) => {
   // add background 10x10
@@ -86,8 +95,38 @@ scene("play", ({level}) => {
     ],
   ];
 
-  // add map level 
+  // add Map level 
   map = addLevel(matrix[level], mapConfig);
+
+  // add Player 
+  const player = add([
+    // position. map grid starts at 1, so (2,2) is first unblocked square
+    pos(map.getPos(2,2)),
+    sprite("knight", { anim: "idle" }),
+    solid(), // makes other objects impenetrable
+    area(), // generates collider area from shape & enables collision detection
+    origin("center"), // by default top-left
+  ]);
+
+  onKeyDown("left", () => {
+    player.flipX(true);
+    player.move(-PLAYER_SPEED, 0);
+  });
+  onKeyDown("right", () => {
+    player.flipX(false);
+    player.move(PLAYER_SPEED, 0);
+  });
+  onKeyDown("up", () => {
+    player.move(0, -PLAYER_SPEED);
+  });
+  onKeyDown("down", () => {
+    player.move(0, PLAYER_SPEED);
+  });
+
+  onKeyPress(["left", "right", "up", "down"], () => {
+    player.play("run");
+  });
 });
+
 
 go("play", { level: 0 });
