@@ -42,11 +42,17 @@ loadSprite("spikes", "/sprites/spikes.png", {
 loadSprite("hole", "/sprites/hole.png", {
   sliceX: 2,
   anims: {
-    open: { from: 0, to: 1, speed: 5, loop: false },
+    open: { from: 0, to: 1, speed: 3, loop: false },
   },
 });
 
-scene("play", ({level}) => {
+/*
+* -------------------
+* SCENE - PLAY 
+* -------------------
+*/
+
+scene("play", ({ level }) => {
   // add background 10x10
   addLevel(
     [
@@ -99,8 +105,7 @@ scene("play", ({level}) => {
       "spikes",
       "danger"
     ],
-    h: () => [
-      sprite ("hole"), area(), { opened: "false" }, "hole"],
+    h: () => [sprite ("hole"), area(), { open: "false" }, "hole"],
   };
 
   // List of maps
@@ -113,7 +118,7 @@ scene("play", ({level}) => {
       "l        r",
       "l &    & r",
       "l        r",
-      "l^       r",
+      "l        r",
       "l h  &   r",
       "lwwwwwwwwr",
     ],
@@ -145,6 +150,17 @@ scene("play", ({level}) => {
     area({ width: 16, height: 16, offset: vec2(0,8) }),
   ]);
 
+  player.onCollide("danger", async (d) => {
+    shake(10);
+    burp();
+    addKaboom(player.pos); // kaboom graphic at the player's position
+    destroy(player); // destroys both player...
+    destroy(d); // ...and danger
+
+    await wait(1);
+    go("over", { score: 0 });
+  });
+
   onKeyDown("left", () => {
     player.flipX(true);
     player.move(-PLAYER_SPEED, 0);
@@ -159,11 +175,9 @@ scene("play", ({level}) => {
   onKeyDown("down", () => {
     player.move(0, PLAYER_SPEED);
   });
-
   onKeyPress(["left", "right", "up", "down"], () => {
     player.play("run");
   });
-
   onKeyRelease(["left", "right", "up", "down"], () => {
     if(
       !isKeyDown("left") &&
@@ -174,9 +188,38 @@ scene("play", ({level}) => {
       player.play("idle");
     }
   });
+  onKeyPress("space", () => {
+    every("hole", async (h) => {
+      if (player.isTouching(h)) {
+        if (!h.opened) {
+          h.play("open");
+          h.opened = true;
+
+          // wait for 1.5 sec 
+          await wait(1.5);
+          go("play", { level: 1 });
+        }
+      }
+    });
+  });
+});
+
+/*
+* -------------------
+* SCENE - GAME OVER 
+* -------------------
+*/
+
+scene("over", ({ score }) => {
+  add([ text(score, 26), origin("center"), pos(width()/2, height()/2) ]);
+
+  onMousePress(() => {
+    go("play", { level: 0 });
+  });
 });
 
 
 go("play", { level: 0 });
+
 
 // debug.inspect = true;
