@@ -29,7 +29,7 @@ class Api::V1::GamesController < ApplicationController
       render json: top_scores, only: [:score], include: { player: { only: [:id, :username] }}
 
     rescue Exception 
-      render json: { message: "Cannot save game" }, status: 400
+      render json: { message: "Cannot save the game" }, status: 400
     end
   end
 end
