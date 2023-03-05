@@ -33,15 +33,20 @@
     .legend-evil {
       justify-content: flex-end;
     }
-    .sprite-evil {
-      margin-left: 5px;
+    .sprite-evil,
+    .sprite-good {
       text-align: center;
       width: 36px;
+      height: 36px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .sprite-evil {
+      margin-left: 5px;
     }
     .sprite-good {
       margin-right: 5px;
-      text-align: center;
-      width: 36px;
     }
     .legend-name {
       align-self: center;
@@ -95,15 +100,15 @@
           </div>
           <div class="legend-evil">
             <div class="legend-name">Imp-ostor Syndrome</div>
-            <div class="sprite-evil"><img src="/images/imp_idle_anim_f0.png" alt="Imp"></div>
+            <div class="sprite-evil"><img src="/images/imp_idle_anim_f0.png" width="20px" alt="Imp"></div>
           </div>
           <div class="legend-evil">
             <div class="legend-name">Demon of Distraction</div>
-            <div class="sprite-evil"><img src="/images/big_demon_idle_anim_f3.png" alt="Demon"></div>
+            <div class="sprite-evil pb-3"><img src="/images/big_demon_idle_anim_f3.png" alt="Demon"></div>
           </div>
           <div class="legend-evil">
             <div class="legend-name">Shiny New Idea</div>
-            <div class="sprite-evil"><img src="/images/coin_anim_f0.png" alt="Coin"></div>
+            <div class="sprite-evil"><img src="/images/coin_anim_f0.png" width="16px" alt="Coin"></div>
           </div>
         </div>
       </div>
@@ -128,11 +133,11 @@
             <div class="legend-name">Treasure Trove of Tasks</div>
           </div>
           <div class="legend-good">
-            <div class="sprite-good"><img src="/images/elf_f_idle_anim_f0.png" width="20px" alt="Elf"></div>
+            <div class="sprite-good pb-3"><img src="/images/elf_f_idle_anim_f0.png" width="22px" alt="Elf"></div>
             <div class="legend-name">(S)Elf Care</div>
           </div>
           <div class="legend-good">
-            <div class="sprite-good"><img src="/images/flask_big_blue.png" alt="Flask"></div>
+            <div class="sprite-good"><img src="/images/flask_big_blue.png" width="20px" alt="Flask"></div>
             <div class="legend-name">Hydration</div>
           </div>
         </div>

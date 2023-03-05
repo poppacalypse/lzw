@@ -13,7 +13,7 @@ const WIZARD_SPEED = 20;
 const FIRE_SPEED = 100;
 
 const BASE_X = width()/2;
-const BASE_Y = 50;
+const BASE_Y = 65;
 
 const BASE_URL = "http://127.0.0.1:3000/api/v1";
 
@@ -29,6 +29,27 @@ loadSprite("wall_fountain", "/sprites/wall_fountain.png", {
     idle: { from: 0, to: 2, speed: 5, loop: true } 
     // 'idle' is own name. get frames 0-2, at speed of 5 frames per second
   }
+});
+loadSprite("llamazon1", "/sprites/llamazon1.png", {
+  sliceX: 32,
+  anims: {
+    idle: { from:  0, to: 20, speed: 5, loop: true },
+    run:  { from: 21, to: 31, speed: 10, loop: true }
+  },
+});
+loadSprite("llamazon2", "/sprites/llamazon2.png", {
+  sliceX: 17,
+  anims: {
+    idle: { from: 0, to: 4, speed: 15, loop: true },
+    run: { from: 5, to: 16, speed: 20, loop: true }
+  },
+});
+loadSprite("llamazon3", "/sprites/llamazon3.png", {
+  sliceX: 17,
+  anims: {
+    idle: { from: 0, to: 4, speed: 10, loop: true },
+    run: { from: 5, to: 16, speed: 15, loop: true }
+  },
 });
 loadSprite("knight", "/sprites/knight.png", {
   sliceX: 8,
@@ -73,8 +94,8 @@ loadSprite("llama", "/sprites/llama_idle.png", {
   sliceX: 20,
   anims: {
     idle: { from: 0, to: 19, speed: 5, loop: true }
-  }
-})
+  },
+});
 
 /*
 * -------------------
@@ -214,14 +235,26 @@ scene("play", ({ level }) => {
   add([text(currentPlayer), pos(238,70), origin("center"), scale(0.1)])
 
   // ----- PLAYER ----- 
+  // const player = add([
+  //   // position. map grid starts at 1, so (2,2) is first unblocked square
+  //   pos(map.getPos(2,2)),
+  //   sprite("knight", { anim: "idle" }),
+  //   solid(), // makes other objects impenetrable
+  //   // area(), // generates collider area from shape & enables collision detection
+  //   origin("center"), // by default top-left
+  //   area({ width: 16, height: 16, offset: vec2(0,7) }),
+  // ]);
+
   const player = add([
     // position. map grid starts at 1, so (2,2) is first unblocked square
-    pos(map.getPos(2,2)),
-    sprite("knight", { anim: "idle" }),
+    pos(map.getPos(10,2)),
+    sprite("llamazon3", { anim: "idle" }),
+    scale(0.047),
     solid(), // makes other objects impenetrable
     // area(), // generates collider area from shape & enables collision detection
     origin("center"), // by default top-left
-    area({ width: 16, height: 16, offset: vec2(0,7) }),
+    // area({ width: 16, height: 16, offset: vec2(0,7) }),
+    area({ width: 516, height: 595, offset: vec2(0,0) })
   ]);
 
   player.onCollide("danger", async (d) => {
@@ -236,11 +269,11 @@ scene("play", ({ level }) => {
   });
 
   onKeyDown("left", () => {
-    player.flipX(true);
+    player.flipX(false);
     player.move(-PLAYER_SPEED, 0);
   });
   onKeyDown("right", () => {
-    player.flipX(false);
+    player.flipX(true);
     player.move(PLAYER_SPEED, 0);
   });
   onKeyDown("up", () => {
@@ -450,7 +483,7 @@ scene("intro", async () => {
     pos(BASE_X, BASE_Y - 30),
     sprite("llama", { anim: "idle" }),
     origin("center"),
-    scale(0.075),
+    scale(0.08),
   ]);
 
   games.forEach((game, index) => {
@@ -464,13 +497,21 @@ scene("intro", async () => {
     ]);
   });
 
+  add([
+    pos((width()/2), 170),
+    origin("center"),
+    text("click to play again", {
+        size: 10, // 48 pixels tall
+    }),
+  ])
+
   onMousePress(() => {
     go("play", { level: 0 });
   });
 
 });
 
-// go("play", { level: 1 });
-go("intro");
+go("play", { level: 1 });
+// go("intro");
 
 // debug.inspect = true;
