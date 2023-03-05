@@ -11,19 +11,40 @@
       font-family: 'Avenir Next', system-ui, -apple-system, BlinkMacSystemFont, 'Roboto', "Segoe UI", Oxygen, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     }
     button {
+      font-size: 15px !important;
       font-weight: bolder !important;
       transition: all 0.5s ease 0s !important;
-      font-size: 15px !important;
     }
     button:hover,
     button:active {
       background-color: #ffffff !important;
-      outline: 2px solid #000000 !important;
       color: #000000 !important;
+      outline: 2px solid #000000 !important;
     }
-    li {
-      list-style: none;
+    .legend {
+      display: flex;
+      flex-direction: column;
+    }
+    .legend-evil,
+    .legend-good {
+      display: flex;
       margin-bottom: 1rem;
+    }
+    .legend-evil {
+      justify-content: flex-end;
+    }
+    .sprite-evil {
+      margin-left: 5px;
+      text-align: center;
+      width: 36px;
+    }
+    .sprite-good {
+      margin-right: 5px;
+      text-align: center;
+      width: 36px;
+    }
+    .legend-name {
+      align-self: center;
     }
     a {
       text-decoration: none;
@@ -59,37 +80,69 @@
 
     <!-- game screen & legends -->
     <div class="d-flex justify-content-center align-items-start">
-  
-      <!-- good guys -->
-      <div class="col-md-2 text-end me-4">
-        <p class="bg-success-subtle">&nbsp;</p>
-        <ul class="pe-3">
-          <li>llamazon</li>
-          <li>(s)elf care</li>
-          <li>hydration</li>
-          <li>treasure trove of tasks</li>
-        </ul>
+
+       <!-- bad guys -->
+       <div class="col-md-2 me-4">
+        <p class="bg-danger-subtle">&nbsp;</p>
+        <div class="legend">
+          <div class="legend-evil">
+            <div class="legend-name">Dis-Ogre-nisation</div>
+            <div class="sprite-evil"><img src="/images/ogre_idle_anim_f2.png" alt="Ogre"></div>
+          </div>
+          <div class="legend-evil">
+            <div class="legend-name">Prickly Conscience</div>
+            <div class="sprite-evil"><img src="/images/floor_spikes_anim_f3.png" alt="Spikes"></div>
+          </div>
+          <div class="legend-evil">
+            <div class="legend-name">Imp-ostor Syndrome</div>
+            <div class="sprite-evil"><img src="/images/imp_idle_anim_f0.png" alt="Imp"></div>
+          </div>
+          <div class="legend-evil">
+            <div class="legend-name">Demon of Distraction</div>
+            <div class="sprite-evil"><img src="/images/big_demon_idle_anim_f3.png" alt="Demon"></div>
+          </div>
+          <div class="legend-evil">
+            <div class="legend-name">Shiny New Idea</div>
+            <div class="sprite-evil"><img src="/images/coin_anim_f0.png" alt="Coin"></div>
+          </div>
+        </div>
       </div>
-      
+  
       <!-- game screen -->
       <canvas id="screen"></canvas>
 
-      <!-- bad guys -->
-      <div class="col-md-2 ms-4">
-        <p class="bg-danger-subtle">&nbsp;</p>
-        <ul class="ps-3">
-          <li>dis-ogre-nisation</li>
-          <li>prickly conscience</li>
-          <li>imp-ostor syndrome</li>
-          <li>shiny new idea</li>
-          <li>demon of distraction</li>
-        </ul>
+       <!-- good guys -->
+       <div class="col-md-2 ms-4">
+        <p class="bg-success-subtle">&nbsp;</p>
+        <div class="legend">
+          <div class="legend-good">
+            <div class="sprite-good"><img src="/images/__white_alpaca_no_basket_idle_000.png" width="36px" alt="Llama"></div>
+            <div class="legend-name">Llamazon</div>
+          </div>
+          <div class="legend-good">
+            <div class="sprite-good"><img src="/images/floor_ladder.png" alt="Ladder"></div>
+            <div class="legend-name">Level Up</div>
+          </div>
+          <div class="legend-good">
+            <div class="sprite-good"><img src="/images/chest_full_open_anim_f1.png" alt="Chest"></div>
+            <div class="legend-name">Treasure Trove of Tasks</div>
+          </div>
+          <div class="legend-good">
+            <div class="sprite-good"><img src="/images/elf_f_idle_anim_f0.png" width="20px" alt="Elf"></div>
+            <div class="legend-name">(S)Elf Care</div>
+          </div>
+          <div class="legend-good">
+            <div class="sprite-good"><img src="/images/flask_big_blue.png" alt="Flask"></div>
+            <div class="legend-name">Hydration</div>
+          </div>
+        </div>
       </div>
+
     </div>
 
     <!-- disclaimer -->
     <div class="mt-4 text-center">
-      <p>Click 🦙 to start. ←◀ ↑▲ ↓▼ →▶️ Arrow keys to move. Spacebar to interact. </p>
+      <p>Click <img src="/images/__white_alpaca_no_basket_idle_000.png" width="32px" alt="Llama"> to start. ←◀ ↑▲ ↓▼ →▶️ Arrow keys to move. Spacebar to interact. </p>
       <p>Playable on desktop web only. This is a fan project; 
         no affiliation with <a href="https://llamalife.co/">llama life</a>.</p>
     </div>

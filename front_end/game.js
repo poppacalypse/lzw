@@ -69,6 +69,12 @@ loadSprite("wizard", "/sprites/wizard.png", {
     run: { from: 4, to: 7, speed: 10, loop: true }
   },
 });
+loadSprite("llama", "/sprites/llama_idle.png", {
+  sliceX: 20,
+  anims: {
+    idle: { from: 0, to: 19, speed: 5, loop: true }
+  }
+})
 
 /*
 * -------------------
@@ -407,6 +413,13 @@ const saveGame = async (player, score) => {
 
 scene("over", ({ score }) => {
   add([ text(score, 26), origin("center"), pos(width()/2, height()/2) ]);
+  add([
+    pos((width()/2), 150),
+    origin("center"),
+    text("click to see leaderboard", {
+        size: 10, // 48 pixels tall
+    }),
+  ])
 
   if (score > 0) saveGame(currentPlayer, score);
 
@@ -435,8 +448,9 @@ scene("intro", async () => {
   // Step 2 - render leaderboard 
   add([
     pos(BASE_X, BASE_Y - 30),
-    sprite("knight", { anim: "idle" }),
-    origin("center")
+    sprite("llama", { anim: "idle" }),
+    origin("center"),
+    scale(0.075),
   ]);
 
   games.forEach((game, index) => {
