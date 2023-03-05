@@ -1,6 +1,6 @@
 // initialise context
 kaboom({
-  scale: 3,
+  scale: 2.5,
   width: 282,
   height: 192,
   background: [0,0,0],

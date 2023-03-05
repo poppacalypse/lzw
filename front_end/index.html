@@ -6,33 +6,95 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
   <title>Llamazing Warrior</title>
+  <style>
+    body {
+      font-family: 'Avenir Next', system-ui, -apple-system, BlinkMacSystemFont, 'Roboto', "Segoe UI", Oxygen, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    }
+    button {
+      font-weight: bolder !important;
+      transition: all 0.5s ease 0s !important;
+      font-size: 15px !important;
+    }
+    button:hover,
+    button:active {
+      background-color: #ffffff !important;
+      outline: 2px solid #000000 !important;
+      color: #000000 !important;
+    }
+    li {
+      list-style: none;
+      margin-bottom: 1rem;
+    }
+    a {
+      text-decoration: none;
+    }
+    a:hover,
+    a:active {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
-    <div class="d-flex justify-content-center">
-      <div class="mt-5">
-        <div class="d-flex flex-column align-items-center">
-          <h3 class="text-center mb-3">🦙 Llamazing Warrior 😎</h3>
-          <form id="login-form" class="w-50">
-            <div class="input-group mb-3">
-              <input 
-                type="text" 
-                class="form-control" 
-                id="username"
-                placeholder="Enter your username"
-                required 
-                maxlength="17">
-              <button 
-                class="btn btn-outline-secondary w-25" 
-                type="submit">
-                Start
-              </button>
-            </div>
-          </form>
-        </div>
+    
 
-      <canvas id="screen"></canvas>
-        
+    <div>
+      <div class="mt-5 mb-4 d-flex flex-column align-items-center">
+        <h3 
+          class="text-center mb-3"
+          style="
+            font-weight: bolder;
+            font-size: 30px;
+          "
+          
+        >llamazing warrior.</h3>
+        <form id="login-form" class="w-50">
+          <div class="input-group mb-3">
+            <input 
+              type="text" 
+              class="form-control" 
+              id="username"
+              placeholder="Enter your username"
+              required 
+              maxlength="17">
+            <button 
+              class="btn btn-dark w-25" 
+              type="submit">
+              start
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- good guys -->
+      <div class="d-flex justify-content-center align-items-start">
+        <div class="col-md-2 text-end me-4">
+          <p class="bg-success-subtle">&nbsp;</p>
+          <ul class="pe-3">
+            <li>llamazon</li>
+            <li>(s)elf care</li>
+            <li>hydration</li>
+            <li>treasure trove of tasks</li>
+          </ul>
+        </div>
+  
+        <canvas id="screen"></canvas>
+  
+        <!-- bad guys -->
+        <div class="col-md-2 ms-4">
+          <p class="bg-danger-subtle">&nbsp;</p>
+          <ul class="ps-3">
+            <li>dis-ogre-nisation</li>
+            <li>prickly conscience</li>
+            <li>imp-ostor syndrom</li>
+            <li>shiny new idea</li>
+            <li>demon of distraction</li>
+          </ul>
+        </div>
+      </div>
+      <div class="mt-4 text-center">
+        <p>Only playable on desktop web. This is a fan project; 
+          no affiliation with <a href="https://llamalife.co/">llama life</a>.</p>
       </div>
     </div>
   </div>
