@@ -35,71 +35,68 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    
+  
+  <div class="container h-100 d-flex flex-column justify-content-center">
 
-    <div>
-      <div class="mt-5 mb-4 d-flex flex-column align-items-center">
-        <h3 
-          class="text-center mb-3"
-          style="
-            font-weight: bolder;
-            font-size: 30px;
-          "
-          
-        >llamazing warrior.</h3>
-        <form id="login-form" class="w-50">
-          <div class="input-group mb-3">
-            <input 
-              type="text" 
-              class="form-control" 
-              id="username"
-              placeholder="Enter your username"
-              required 
-              maxlength="17">
-            <button 
-              class="btn btn-dark w-25" 
-              type="submit">
-              start
-            </button>
-          </div>
-        </form>
-      </div>
+    <!-- title and form -->
+    <div class="d-flex flex-column align-items-center">
+      <h3 class="text-center mb-3" style="font-weight: bolder; font-size: 30px;">
+        llamazing warrior.
+      </h3>
+      <form id="login-form" class="w-50">
+        <div class="input-group mb-5">
+          <input 
+            type="text" 
+            class="form-control" 
+            id="username"
+            placeholder="Enter your username"
+            required 
+            maxlength="17">
+          <button class="btn btn-dark w-25" type="submit">start</button>
+        </div>
+      </form>
+    </div>
 
+    <!-- game screen & legends -->
+    <div class="d-flex justify-content-center align-items-start">
+  
       <!-- good guys -->
-      <div class="d-flex justify-content-center align-items-start">
-        <div class="col-md-2 text-end me-4">
-          <p class="bg-success-subtle">&nbsp;</p>
-          <ul class="pe-3">
-            <li>llamazon</li>
-            <li>(s)elf care</li>
-            <li>hydration</li>
-            <li>treasure trove of tasks</li>
-          </ul>
-        </div>
-  
-        <canvas id="screen"></canvas>
-  
-        <!-- bad guys -->
-        <div class="col-md-2 ms-4">
-          <p class="bg-danger-subtle">&nbsp;</p>
-          <ul class="ps-3">
-            <li>dis-ogre-nisation</li>
-            <li>prickly conscience</li>
-            <li>imp-ostor syndrom</li>
-            <li>shiny new idea</li>
-            <li>demon of distraction</li>
-          </ul>
-        </div>
+      <div class="col-md-2 text-end me-4">
+        <p class="bg-success-subtle">&nbsp;</p>
+        <ul class="pe-3">
+          <li>llamazon</li>
+          <li>(s)elf care</li>
+          <li>hydration</li>
+          <li>treasure trove of tasks</li>
+        </ul>
       </div>
-      <div class="mt-4 text-center">
-        <p>Only playable on desktop web. This is a fan project; 
-          no affiliation with <a href="https://llamalife.co/">llama life</a>.</p>
+      
+      <!-- game screen -->
+      <canvas id="screen"></canvas>
+
+      <!-- bad guys -->
+      <div class="col-md-2 ms-4">
+        <p class="bg-danger-subtle">&nbsp;</p>
+        <ul class="ps-3">
+          <li>dis-ogre-nisation</li>
+          <li>prickly conscience</li>
+          <li>imp-ostor syndrom</li>
+          <li>shiny new idea</li>
+          <li>demon of distraction</li>
+        </ul>
       </div>
     </div>
+
+    <!-- disclaimer -->
+    <div class="mt-4 text-center">
+      <p>Only playable on desktop web. This is a fan project; 
+        no affiliation with <a href="https://llamalife.co/">llama life</a>.</p>
+    </div>
+
   </div>
 
   <script src="https://unpkg.com/kaboom@2000.2.10/dist/kaboom.js"></script>
   <script type="module" src="game.js"></script>
+
 </body>
 </html>

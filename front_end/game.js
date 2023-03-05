@@ -17,6 +17,8 @@ const BASE_Y = 50;
 
 const BASE_URL = "http://127.0.0.1:3000/api/v1";
 
+let currentPlayer;
+
 loadSprite("floor", "/sprites/floor.png", { sliceX: 8 });
 loadSprite("wall_left", "/sprites/wall_left.png");
 loadSprite("wall_mid", "/sprites/wall_mid.png");
@@ -66,6 +68,32 @@ loadSprite("wizard", "/sprites/wizard.png", {
     idle: { from: 0, to: 4, speed: 5, loop: true },
     run: { from: 4, to: 7, speed: 10, loop: true }
   },
+});
+
+/*
+* -------------------
+* SUBMIT FORM 
+* -------------------
+*/
+
+const loginForm = document.getElementById("login-form");
+loginForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  currentPlayer = document.getElementById("username").value.trim();
+
+  await fetch(BASE_URL + "/players", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify({
+      username: currentPlayer,
+    }),
+  });
+
+  go("play", { level: 0});
 });
 
 /*
