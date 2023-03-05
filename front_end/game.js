@@ -205,7 +205,7 @@ scene("play", ({ level }) => {
     scale(0.3),
     origin("center")
   ]);
-  add([text("Carl Poppa"), pos(238,70), origin("center"), scale(0.1)])
+  add([text(currentPlayer), pos(238,70), origin("center"), scale(0.1)])
 
   // ----- PLAYER ----- 
   const player = add([
@@ -391,8 +391,24 @@ scene("play", ({ level }) => {
 * -------------------
 */
 
+const saveGame = async (player, score) => {
+  await fetch(BASE_URL + "/games", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify({
+      username: player,
+      score: score,
+    }),
+  });
+}
+
 scene("over", ({ score }) => {
   add([ text(score, 26), origin("center"), pos(width()/2, height()/2) ]);
+
+  if (score > 0) saveGame(currentPlayer, score);
 
   onMousePress(() => {
     go("intro");
