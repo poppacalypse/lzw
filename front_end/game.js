@@ -9,7 +9,8 @@ kaboom({
 
 const PLAYER_SPEED = 80;
 const OGRE_SPEED = 30;
-const WIZARD_SPEED = 20;
+const WIZARD_SPEED = 10;
+const DEMON_SPEED = 10;
 const FIRE_SPEED = 100;
 
 const BASE_X = width()/2;
@@ -23,11 +24,18 @@ loadSprite("floor", "/sprites/floor.png", { sliceX: 8 });
 loadSprite("wall_left", "/sprites/wall_left.png");
 loadSprite("wall_mid", "/sprites/wall_mid.png");
 loadSprite("wall_right", "/sprites/wall_right.png");
-loadSprite("wall_fountain", "/sprites/wall_fountain.png", {
+loadSprite("wall_goo", "/sprites/wall_goo.png");
+loadSprite("wall_fire", "/sprites/wall_fire.png", {
   sliceX: 3,
   anims: { // (Anims in plural)
     idle: { from: 0, to: 2, speed: 5, loop: true } 
     // 'idle' is own name. get frames 0-2, at speed of 5 frames per second
+  }
+});
+loadSprite("wall_fire_basin", "/sprites/wall_fire_basin.png", {
+  sliceX: 3,
+  anims: { 
+    idle: { from: 0, to: 2, speed: 5, loop: true } 
   }
 });
 loadSprite("llamazon1", "/sprites/llamazon1.png", {
@@ -86,8 +94,15 @@ loadSprite("chest", "/sprites/chest.png", {
 loadSprite("wizard", "/sprites/wizard.png", {
   sliceX: 8,
   anims: {
-    idle: { from: 0, to: 4, speed: 5, loop: true },
-    run: { from: 4, to: 7, speed: 10, loop: true }
+    idle: { from: 0, to: 3, speed: 5, loop: true },
+    run: { from: 4, to: 7, speed: 3, loop: true }
+  },
+});
+loadSprite("demon", "/sprites/demon.png", {
+  sliceX: 8,
+  anims: {
+    idle: { from: 0, to: 3, speed: 5, loop: true },
+    run: { from: 4, to: 7, speed: 3, loop: true }
   },
 });
 loadSprite("llama", "/sprites/llama_idle.png", {
@@ -158,12 +173,19 @@ scene("play", ({ level }) => {
     width: 16,
     height: 16,
     // Solid means you can't move through it. "wall" at end is a tag, can be named anything
-    l: () => [sprite ("wall_left"), area(), solid(), "wall"], 
+    l: () => [sprite ("wall_left"),  area(), solid(), "wall"], 
     r: () => [sprite ("wall_right"), area(), solid(), "wall"],
     w: () => [sprite ("wall_mid"), area(), solid(), "wall"],
+    g: () => [sprite ("wall_goo"), area(), solid(), "wall"],
     // Fountain is an animation, so must specify type - idle or run (anim in singular)
     f: () => [
-      sprite ("wall_fountain", { anim: "idle" }), 
+      sprite ("wall_fire", { anim: "idle" }), 
+      area(), 
+      solid(), 
+      "wall"
+    ],
+    b: () => [
+      sprite ("wall_fire_basin", { anim: "idle" }), 
       area(), 
       solid(), 
       "wall"
@@ -191,31 +213,31 @@ scene("play", ({ level }) => {
   // List of maps
   const matrix = [
     [
-      "lwwwwffwwwwr",
+      "fwwwfwwfwwff",
+      "b   b  b  bb",
+      "l &        r",
       "l          r",
-      "l     &    r",
-      "l     ^    r",
-      "l          r",
+      "l     ^    g",
       "l          r",
       "l &        r",
       "l          r",
-      "l^         r",
+      "l^         g",
       "l          r",
-      "l h  &     r",
-      "lwwwwwwwwwwr",
+      "l h  &    fr",
+      "gwwwwwwwwwbr",
     ],
     [
-      "lffffffffffr",
+      "lwwwwwwwwwwr",
       "l          r",
       "l          r",
-      "ll        rr",
+      "l         rr",
       "l          r",
       "l          r",
-      "ll        rr",
-      "ll        rr",
       "l          r",
       "l          r",
-      "ll        rr",
+      "l          r",
+      "l          r",
+      "l          r",
       "lwwwwwwwwwwr",
     ],
   ];
@@ -252,9 +274,9 @@ scene("play", ({ level }) => {
     scale(0.047),
     solid(), // makes other objects impenetrable
     // area(), // generates collider area from shape & enables collision detection
-    origin("center"), // by default top-left
-    // area({ width: 16, height: 16, offset: vec2(0,7) }),
-    area({ width: 516, height: 595, offset: vec2(0,0) })
+    // origin("center"), // by default top-left
+    // ⬆️ removing this solved the "stuck at left wall" issue
+    area({ width: 516, height: 595 }),
   ]);
 
   player.onCollide("danger", async (d) => {
@@ -302,8 +324,8 @@ scene("play", ({ level }) => {
           h.play("open");
           h.opened = true;
 
-          // wait for 1.5 sec 
-          await wait(1.5);
+          // wait for 1 sec 
+          await wait(1);
           go("play", { level: 1 });
         }
       }
@@ -359,10 +381,10 @@ scene("play", ({ level }) => {
     ])
   });
 
-  // ----- WIZARD -----
-  const wizard = add([
-    sprite("wizard"),
-    pos(map.getPos(9,9)),
+  // ----- DEMON -----
+  const demon = add([
+    sprite("demon"),
+    pos(map.getPos(1,9)),
     origin("center"),
     // w/o area defn, object cannot detect boundary for collision
     area(), 
@@ -370,58 +392,123 @@ scene("play", ({ level }) => {
     state("move", ["idle", "attack", "move"]) // state fn from Kaboom library
   ]);
 
-    // when Wizard is in idle state, do something
-    // Or in tech jargon:
-    // run the callback every time Wizard ENTERs "idle" state
-    wizard.onStateEnter("idle", async () => {
-      wizard.play("idle");
-      // IDLE for 0.5secs, then enter ATTACK state
-      await wait(0.5);
-      wizard.enterState("attack");
-    });
+  // when demon is in idle state, do something
+  // Or in tech jargon:
+  // run the callback every time demon ENTERs "idle" state
+  demon.onStateEnter("idle", async () => {
+    demon.play("idle");
+    // IDLE for 2sec, then enter ATTACK state
+    await wait(2)
+    demon.enterState("attack");
+  });
 
-    // run the callback every time Wizard ENTERs "attack" state
-    wizard.onStateEnter("attack", async () => {
-      if (player.exists()){
-        // calculate vector of player from wizard
-        const dir = player.pos.sub(wizard.pos).unit(); 
+  // run the callback every time demon ENTERs "attack" state
+  demon.onStateEnter("attack", async () => {
+    if (player.exists()){
+      // calculate vector of player from demon
+      const dir = player.pos.sub(demon.pos).unit(); 
 
-        // generate fire
-        add([
-          pos(wizard.pos),
-          move(dir, FIRE_SPEED),
-          rect(2,2), // rectangle
-          area(),
-          origin("center"),
-          color(RED),
-          // destroy object when it's out of screen view
-          cleanup(),
-          "fire",
-          "danger"
-        ]);
-      }
+      // generate fire
+      add([
+        pos(demon.pos),
+        move(dir, FIRE_SPEED),
+        rect(3,1), // rectangle
+        area(),
+        origin("center"),
+        color(RED),
+        // destroy object when it's out of screen view
+        cleanup(),
+        "fire",
+        "danger"
+      ]);
+    }
 
-      await wait(1)
-      wizard.enterState("move");
-    });
+    await wait(1)
+    demon.enterState("move");
+  });
 
-    // run the callback every time Wizard ENTERs "move" state
-    wizard.onStateEnter("move", async () => {
-      wizard.play("run");
-      // MOVE for 0.5secs, then enter ATTACK state
-      await wait(2);
-      wizard.enterState("idle");
-    });
+  // run the callback every time demon ENTERs "move" state
+  demon.onStateEnter("move", async () => {
+    demon.play("run");
+    // MOVE for 2secs, then enter ATTACK state
+    await wait(2);
+    demon.enterState("idle");
+  });
 
-    wizard.onStateUpdate("move", () => {
-      if (!player.exists()) return;
+  demon.onStateUpdate("move", () => {
+    if (!player.exists()) return;
 
-      const dir = player.pos.sub(wizard.pos).unit();
-      wizard.flipX(dir.x < 0);
-      wizard.move(dir.scale(WIZARD_SPEED));
-    });
+    const dir = player.pos.sub(demon.pos).unit();
+    demon.flipX(dir.x < 0);
+    demon.move(dir.scale(DEMON_SPEED));
+  });
 
-    wizard.enterState("move");
+  demon.enterState("move");
+
+
+  // ----- WIZARD -----
+  // const wizard = add([
+  //   sprite("wizard"),
+  //   pos(map.getPos(1,9)),
+  //   origin("center"),
+  //   // w/o area defn, object cannot detect boundary for collision
+  //   area(), 
+  //   "danger",
+  //   state("move", ["idle", "attack", "move"]) // state fn from Kaboom library
+  // ]);
+
+  //   // when Wizard is in idle state, do something
+  //   // Or in tech jargon:
+  //   // run the callback every time Wizard ENTERs "idle" state
+  //   wizard.onStateEnter("idle", async () => {
+  //     wizard.play("idle");
+  //     // IDLE for 2sec, then enter ATTACK state
+  //     await wait(2)
+  //     wizard.enterState("attack");
+  //   });
+
+  //   // run the callback every time Wizard ENTERs "attack" state
+  //   wizard.onStateEnter("attack", async () => {
+  //     if (player.exists()){
+  //       // calculate vector of player from wizard
+  //       const dir = player.pos.sub(wizard.pos).unit(); 
+
+  //       // generate fire
+  //       add([
+  //         pos(wizard.pos),
+  //         move(dir, FIRE_SPEED),
+  //         rect(3,1), // rectangle
+  //         area(),
+  //         origin("center"),
+  //         color(RED),
+  //         // destroy object when it's out of screen view
+  //         cleanup(),
+  //         "fire",
+  //         "danger"
+  //       ]);
+  //     }
+
+  //     await wait(1)
+  //     wizard.enterState("move");
+  //   });
+
+  //   // run the callback every time Wizard ENTERs "move" state
+  //   wizard.onStateEnter("move", async () => {
+  //     wizard.play("run");
+  //     // MOVE for 0.5secs, then enter ATTACK state
+  //     await wait(2);
+  //     wizard.enterState("idle");
+  //   });
+
+  //   wizard.onStateUpdate("move", () => {
+  //     if (!player.exists()) return;
+
+  //     const dir = player.pos.sub(wizard.pos).unit();
+  //     wizard.flipX(dir.x < 0);
+  //     wizard.move(dir.scale(WIZARD_SPEED));
+  //   });
+
+  //   wizard.enterState("move");
 });
 
 /*
@@ -511,7 +598,7 @@ scene("intro", async () => {
 
 });
 
-go("play", { level: 1 });
-// go("intro");
+// go("play", { level: 1 });
+go("intro");
 
 // debug.inspect = true;
